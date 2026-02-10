@@ -1,4 +1,4 @@
-# 🚀 Startup Oracle Agent
+# 🚀 Opportunity Mining Agent
 
 A LangGraph-based pipeline for startup opportunity discovery: extract pain points, cluster them into opportunities, score them, and generate reports from comments and social media text.
 
@@ -82,7 +82,12 @@ Works for any website that supports keyword-based URLs.
 
 
 
-# 🚀 Startup Oracle Agent
+
+
+
+
+
+# 🚀 创业机会洞察 Agent
 
 基于 LangGraph 的初创机会发现流水线：  
 从评论与社交媒体文本中提取痛点、聚类机会、评分并生成报告。
@@ -160,5 +165,6 @@ state["collector"]["target_url"]
 使用关键词拼接 URL
 ORACLE_SEARCH_KEYWORD=AI工具
 ORACLE_COLLECT_URL_TEMPLATE=https://www.example.com/explore/{search_keyword}
+
 
 
