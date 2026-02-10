@@ -1,0 +1,39 @@
+# 环境与密钥
+.env
+.env.local
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+
+# 数据与产出
+data/*
+!data/raw/.gitkeep
+!data/cleaned/.gitkeep
+!data/runs/.gitkeep
+
+# 可观测/缓存
+.langsmith/
+.chroma/
+*.db
+*.sqlite
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# 测试与构建
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+*.egg-info/

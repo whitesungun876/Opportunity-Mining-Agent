@@ -1,0 +1,42 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "startup-oracle-agent"
+version = "0.1.0"
+description = "LangGraph-based startup opportunity discovery agent"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "langgraph>=0.2.0",
+    "langchain>=0.3.0",
+    "langchain-core>=0.3.0",
+    "langchain-openai>=0.2.0",
+    "pydantic>=2.0,<3",
+    "pyyaml>=6.0",
+    "chromadb>=0.4.0",
+    "langsmith>=0.1.0",
+    "python-dotenv>=1.0.0",
+    "playwright>=1.40.0",
+    "browser-use>=0.11.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.24",
+]
+# Chromium browser binary (run after sync: uv run install-chromium)
+chromium = []
+
+[project.scripts]
+install-chromium = "src.scripts.install_browsers:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+pythonpath = ["src"]

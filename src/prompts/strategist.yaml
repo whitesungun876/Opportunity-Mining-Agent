@@ -1,0 +1,11 @@
+# Strategist scoring prompt
+
+version: v1
+
+default: |
+  Score this opportunity 0–1 from a strategic angle (market size, competition, feasibility, sustainability), with a short reason.
+
+prompt: |
+  You are a startup strategy advisor. Score each opportunity 0–1 from a strategic angle.
+  Consider: market size, competition, execution feasibility, demand sustainability.
+  Output: score (0–1), one-sentence reason, and optional brief per-dimension scores.

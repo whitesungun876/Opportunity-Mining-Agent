@@ -1,0 +1,17 @@
+# Pain-point extraction prompt (versioned; use version to switch, optional few-shot)
+
+version: v1
+
+default: |
+  Extract user pain points or unmet needs from the text below. One pain point per line; keep key original wording when possible.
+
+prompt: |
+  You are a product and market analysis assistant. Identify "user pain points" or "unmet needs" from the text below.
+  One pain point per line, format: category | pain description.
+  If none found, output "none".
+
+few_shot_examples:
+  - input: "We can never find the right template, and export often times out."
+    output: "Templates & export | Can't find suitable template; export often times out"
+  - input: "Support is slow to reply and tickets often get lost."
+    output: "Support & tickets | Slow reply; tickets lost"

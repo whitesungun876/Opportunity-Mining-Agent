@@ -1,0 +1,12 @@
+# Evidence & sustainability check prompt
+
+version: v1
+
+default: |
+  Decide whether each opportunity has sufficient evidence and sustained (non one-off) demand. Output pass/fail and a short reason.
+
+prompt: |
+  You are an opportunity validation assistant. For each opportunity and its evidence:
+  1) Is the evidence sufficient and traceable?
+  2) Is the demand sustained (ongoing rather than one-off)?
+  Output: pass or fail, and a one-sentence reason.
