@@ -262,10 +262,21 @@ Create a Railway service from the GitHub repository, then set:
 
 ```text
 Root Directory: backend
-Start Command: uv run uvicorn app.main:app --host 0.0.0.0 --port $PORT
+Start Command: sh -c 'uv run uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}'
 ```
 
 Why: this is a monorepo. The Python FastAPI app lives in `backend/`, and the repository root only contains subdirectories. If Railway builds from the repo root, provider detection can fail because it cannot find `pyproject.toml`.
+
+If Railway asks for the public networking port, use the same port the app listens on. With the command above, Railway should inject `PORT`; if it does not, the fallback is `8000`.
+
+After deployment, verify:
+
+```text
+https://your-railway-domain.up.railway.app/
+https://your-railway-domain.up.railway.app/health
+```
+
+Both should return JSON. If you see `Application failed to respond`, check the deploy logs and confirm that uvicorn started on `0.0.0.0` and the same port configured in Railway networking.
 
 ### Vercel Frontend
 
@@ -298,6 +309,12 @@ Frontend public beta config:
 ```env
 NEXT_PUBLIC_API_BASE_URL=https://your-api.example.com
 NEXT_PUBLIC_PUBLIC_BETA_ENABLED=true
+```
+
+Backend CORS config for the deployed frontend:
+
+```env
+CORS_ORIGINS=https://your-vercel-app.vercel.app
 ```
 
 Production backend secrets to configure in your hosting provider:

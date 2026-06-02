@@ -10,12 +10,14 @@ from app.api.runs import router as runs_router
 from app.config import get_settings
 
 
-app = FastAPI(title=get_settings().app_name)
+settings = get_settings()
+app = FastAPI(title=settings.app_name)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
         "http://127.0.0.1:3000",
+        *settings.cors_origins,
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -23,6 +25,18 @@ app.add_middleware(
 )
 app.include_router(runs_router)
 app.include_router(opportunities_router)
+
+
+@app.get("/")
+def root() -> dict[str, str | bool]:
+    settings = get_settings()
+    return {
+        "status": "ok",
+        "app": settings.app_name,
+        "mock_mode": settings.mock_mode,
+        "docs": "/docs",
+        "health": "/health",
+    }
 
 
 @app.get("/health")

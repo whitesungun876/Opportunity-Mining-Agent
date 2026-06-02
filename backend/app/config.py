@@ -29,6 +29,7 @@ class Settings(BaseModel):
     langfuse_base_url: str | None = None
     langfuse_release: str = "local"
     langfuse_environment: str = "local"
+    cors_origins: list[str] = []
     public_beta_enabled: bool = False
     public_beta_invite_codes: list[str] = []
     public_beta_daily_preflight_limit: int = 20
@@ -82,6 +83,7 @@ def get_settings() -> Settings:
         langfuse_base_url=os.getenv("LANGFUSE_BASE_URL") or os.getenv("LANGFUSE_HOST"),
         langfuse_release=os.getenv("LANGFUSE_RELEASE", "local"),
         langfuse_environment=os.getenv("LANGFUSE_ENVIRONMENT", os.getenv("APP_ENV", "local")),
+        cors_origins=_env_csv("CORS_ORIGINS"),
         public_beta_enabled=_env_bool("PUBLIC_BETA_ENABLED", False),
         public_beta_invite_codes=_env_csv("PUBLIC_BETA_INVITE_CODES"),
         public_beta_daily_preflight_limit=max(1, _env_int("PUBLIC_BETA_DAILY_PREFLIGHT_LIMIT", 20)),
