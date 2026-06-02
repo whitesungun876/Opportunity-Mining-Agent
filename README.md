@@ -262,10 +262,17 @@ Create a Railway service from the GitHub repository, then set:
 ```text
 Root Directory: backend
 Config File Path: /backend/railway.json
+Build Command: pip install ".[dev]"
 Start Command: sh -c 'python -m uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}'
 ```
 
 Why: this is a monorepo. The Python FastAPI app lives in `backend/`, and the repository root only contains subdirectories. If Railway builds from the repo root, provider detection fails because it cannot find `pyproject.toml`. When that happens, Nixpacks does not install Python dependencies and you may see `uv: command not found` or exit code `127`.
+
+If Railway still tries `uv sync --extra dev`, clear the old Build Command in Railway settings or replace it with:
+
+```bash
+pip install ".[dev]"
+```
 
 If Railway asks for the public networking port, use the same port the app listens on. With the command above, Railway should inject `PORT`; if it does not, the fallback is `8000`.
 
