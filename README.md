@@ -250,7 +250,9 @@ Secrets: platform environment variables
 This repository includes starter deployment files:
 
 ```text
+Dockerfile
 frontend/vercel.json
+backend/Dockerfile
 backend/railway.json
 render.yaml
 ```
@@ -262,12 +264,23 @@ Create a Railway service from the GitHub repository, then set:
 ```text
 Root Directory: backend
 Config File Path: /backend/railway.json
+Dockerfile Path: Dockerfile
 Start Command: sh -c 'python -m uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}'
 ```
 
-Why: this is a monorepo. The Python FastAPI app lives in `backend/`, and the repository root only contains subdirectories. If Railway builds from the repo root, provider detection fails because it cannot find `pyproject.toml`. With `Root Directory: backend`, Railway's default Railpack builder can detect the Python project from `pyproject.toml` and `uv.lock`.
+Why: this is a monorepo. The Python FastAPI app lives in `backend/`, and the repository root only contains subdirectories. Use the backend Dockerfile to avoid Railway builder differences between Railpack, Nixpacks, `uv`, and `pip`.
 
-Do not force the builder to Nixpacks. Let Railway use the default Railpack builder for this backend service.
+If Railway does not pick up `backend/Dockerfile`, add this service variable:
+
+```env
+RAILWAY_DOCKERFILE_PATH=backend/Dockerfile
+```
+
+If your Root Directory is already `backend`, use:
+
+```env
+RAILWAY_DOCKERFILE_PATH=Dockerfile
+```
 
 If Railway asks for the public networking port, use the same port the app listens on. With the command above, Railway should inject `PORT`; if it does not, the fallback is `8000`.
 
