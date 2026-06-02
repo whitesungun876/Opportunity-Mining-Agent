@@ -46,17 +46,17 @@ def _env_bool(name: str, default: bool = True) -> bool:
 
 def _env_int(name: str, default: int) -> int:
     value = os.getenv(name)
-    if value is None:
+    if value is None or not value.strip():
+        return default
+    try:
+        return int(value)
+    except ValueError:
         return default
 
 
 def _env_csv(name: str) -> list[str]:
     value = os.getenv(name, "")
     return [item.strip() for item in value.split(",") if item.strip()]
-    try:
-        return int(value)
-    except ValueError:
-        return default
 
 
 @lru_cache
