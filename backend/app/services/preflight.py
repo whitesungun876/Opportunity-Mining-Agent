@@ -19,7 +19,7 @@ from app.services.preflight_cache import preflight_cache
 
 PREFLIGHT_ISSUE_BUDGET_BY_SCOPE = {
     "repo_specific": 20,
-    "focused": 24,
+    "focused": 36,
     "broad": 30,
     "ambiguous": 0,
 }
@@ -163,7 +163,7 @@ def _cheap_plan(topic: str) -> tuple[dict[str, Any], dict[str, Any], dict[str, A
     plan.max_issues = min(plan.max_issues, budget)
     plan.max_repos = min(plan.max_repos, PREFLIGHT_REPO_BUDGET_BY_SCOPE.get(scope.scope, 3))
     plan.expansion_budget = 0
-    plan.global_issue_queries = plan.global_issue_queries[:3]
+    plan.global_issue_queries = plan.global_issue_queries[:8 if scope.scope == "focused" else 3]
     plan.discussion_queries = plan.discussion_queries[:1]
     return scope.model_dump(), intent.model_dump(), plan.model_dump()
 
@@ -205,9 +205,25 @@ def _probe_evidence(state: dict[str, Any]) -> dict[str, Any]:
             queries = plan.get("global_issue_queries") or []
             issues = client.search_issues(
                 queries,
-                per_query=4,
+                per_query=5 if scope == "focused" else 4,
                 max_issues=int(plan.get("max_issues") or 12),
             )
+            if not issues and scope == "focused":
+                fallback_terms = list(dict.fromkeys((plan.get("synonyms") or []) + (plan.get("seed_terms") or [])))[:6]
+                fallback_queries = [
+                    f"{term} production workflow type:issue"
+                    for term in fallback_terms
+                    if str(term).strip()
+                ] + [
+                    f"{term} blocker workaround type:issue"
+                    for term in fallback_terms
+                    if str(term).strip()
+                ]
+                issues = client.search_issues(
+                    fallback_queries,
+                    per_query=5,
+                    max_issues=int(plan.get("max_issues") or 12),
+                )
             evidence = [
                 normalize_github_issue(issue, run_id=state.get("run_id", "preflight"), is_mock=False)
                 for issue in issues
@@ -318,6 +334,14 @@ def run_preflight(topic: str, *, dynamic_search: bool = True) -> dict[str, Any]:
     suggested_queries = _suggestions(topic, scope["scope"], plan, scope.get("suggested_queries") or [])
     plan["suggested_queries"] = suggested_queries
     diagnostics = diagnose_signal(ranked).model_dump()
+    if fit in {"high", "medium"}:
+        diagnostics = {
+            **diagnostics,
+            "low_signal_type": "unknown",
+            "low_signal_stage": "unknown",
+            "low_signal_reason": "",
+            "suggested_recovery_actions": [],
+        }
     warm_state = {
         **ranked,
         "preflight_id": preflight_id,

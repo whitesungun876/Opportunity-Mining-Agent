@@ -18,6 +18,7 @@ class RunCreateRequest(BaseModel):
     dynamic_search: bool = True
     preflight_id: str | None = None
     run_mode: Literal["quick", "standard", "deep"] = "standard"
+    invite_code: str | None = None
 
 
 class RunCreateResponse(BaseModel):
@@ -28,6 +29,7 @@ class RunCreateResponse(BaseModel):
 class RunPreflightRequest(BaseModel):
     topic: str = Field(min_length=1)
     dynamic_search: bool = True
+    invite_code: str | None = None
 
 
 class RunPreflightResponse(BaseModel):

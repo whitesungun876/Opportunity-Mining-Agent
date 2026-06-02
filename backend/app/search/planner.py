@@ -58,6 +58,38 @@ LOW_INFORMATION_TERMS = {
     "open",
     "source",
     "open-source",
+    "is",
+    "are",
+    "too",
+    "very",
+    "hard",
+    "complex",
+    "complicated",
+    "difficult",
+}
+
+PROBLEM_STOP_WORDS = LOW_INFORMATION_TERMS | {
+    "be",
+    "been",
+    "being",
+    "can",
+    "cannot",
+    "cant",
+    "can't",
+    "do",
+    "does",
+    "doesnt",
+    "doesn't",
+    "not",
+    "need",
+    "needs",
+    "pain",
+    "problem",
+    "problems",
+    "issue",
+    "issues",
+    "struggle",
+    "struggling",
 }
 
 
@@ -189,6 +221,65 @@ def _synonyms(topic: str) -> list[str]:
     return _clean_terms(synonyms)[:MAX_SYNONYMS]
 
 
+def _problem_search_terms(topic: str) -> list[str]:
+    """Turn natural-language pain into GitHub issue-search vocabulary."""
+    lowered = topic.lower().replace("self-hosted", "self hosted")
+    tokens = re.findall(r"[A-Za-z0-9][A-Za-z0-9_.+-]*", lowered)
+    meaningful = [token for token in tokens if token not in PROBLEM_STOP_WORDS and len(token) > 2]
+    compact = " ".join(meaningful[:5])
+    terms: list[str] = [compact] if compact else []
+
+    if any(term in lowered for term in ["self hosted", "self-host", "deployment", "deploy"]):
+        terms.extend(
+            [
+                "self hosted deployment",
+                "deployment complexity",
+                "deployment blocker",
+                "helm chart kubernetes",
+                "docker compose deployment",
+                "upgrade migration",
+            ]
+        )
+    if any(term in lowered for term in ["auth", "permission", "rbac", "security", "compliance"]):
+        terms.extend(
+            [
+                "authentication authorization",
+                "access control permissions",
+                "rbac audit logs",
+                "enterprise security",
+                "oauth token scope",
+            ]
+        )
+    if any(term in lowered for term in ["debug", "debugging", "observability", "trace", "monitor"]):
+        terms.extend(
+            [
+                "debugging production workflow",
+                "tracing observability",
+                "monitoring dashboard",
+                "production debugging",
+            ]
+        )
+    if any(term in lowered for term in ["ci", "pipeline", "flaky"]):
+        terms.extend(
+            [
+                "ci failures",
+                "flaky tests",
+                "pipeline debugging",
+                "build failure workflow",
+            ]
+        )
+    if any(term in lowered for term in ["rag", "evaluation", "eval", "regression"]):
+        terms.extend(
+            [
+                "rag evaluation",
+                "retrieval evaluation",
+                "regression testing",
+                "quality evaluation",
+            ]
+        )
+    return _clean_terms(terms)
+
+
 def _repo_hints(topic: str, intent: str, query_scope: QueryScopeDetection | None = None) -> list[str]:
     if query_scope and query_scope.scope == "repo_specific" and query_scope.repo_owner and query_scope.repo_name:
         return [f"{query_scope.repo_owner}/{query_scope.repo_name}"]
@@ -252,6 +343,20 @@ def _format_patterns(patterns: list[str], terms: list[str], *, limit: int) -> li
             if len(_dedupe(queries)) >= limit:
                 return _dedupe(queries)[:limit]
     return _dedupe(queries)[:limit]
+
+
+def _issue_query_terms(
+    topic: str,
+    seed_terms: list[str],
+    synonyms: list[str],
+    query_scope: QueryScopeDetection | None,
+) -> list[str]:
+    if query_scope and query_scope.scope == "focused":
+        # Focused inputs are often natural-language pain statements. GitHub
+        # issue search works better with product/workflow vocabulary than with
+        # quoted full sentences.
+        return _clean_terms(_problem_search_terms(topic) + synonyms + [topic])[: MAX_SEED_TERMS + MAX_SYNONYMS]
+    return _clean_terms([topic] + synonyms + [term for term in seed_terms if term.lower() != topic.lower()])[: MAX_SEED_TERMS + MAX_SYNONYMS]
 
 
 def _apply_scope_settings(plan: SearchPlan, query_scope: QueryScopeDetection | None) -> SearchPlan:
@@ -324,7 +429,8 @@ def generate_search_plan(
     synonyms = seed_payload["synonyms"]
     repo_hints = seed_payload["repo_hints"]
     topic_first_terms = [topic] + synonyms + [term for term in seed_terms if term.lower() != topic.lower()]
-    query_terms = _clean_terms(topic_first_terms)[: MAX_SEED_TERMS + MAX_SYNONYMS]
+    repo_query_terms = _clean_terms(topic_first_terms)[: MAX_SEED_TERMS + MAX_SYNONYMS]
+    issue_query_terms = _issue_query_terms(topic, seed_terms, synonyms, query_scope)
 
     if repo_hints and intent.intent == "repo":
         repo_search_queries = repo_hints[:MAX_REPO_QUERIES]
@@ -333,8 +439,8 @@ def generate_search_plan(
             for pattern in REPO_ISSUE_PATTERNS
         ][:MAX_GLOBAL_ISSUE_QUERIES]
     else:
-        repo_search_queries = _format_patterns(REPO_SEARCH_PATTERNS, query_terms, limit=MAX_REPO_QUERIES)
-        global_issue_queries = _format_patterns(GLOBAL_ISSUE_PATTERNS, query_terms, limit=MAX_INITIAL_GLOBAL_ISSUE_QUERIES)
+        repo_search_queries = _format_patterns(REPO_SEARCH_PATTERNS, repo_query_terms, limit=MAX_REPO_QUERIES)
+        global_issue_queries = _format_patterns(GLOBAL_ISSUE_PATTERNS, issue_query_terms, limit=MAX_INITIAL_GLOBAL_ISSUE_QUERIES)
 
     discussion_queries = [
         query.replace("type:issue", "type:discussion")

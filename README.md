@@ -234,6 +234,87 @@ Do not commit `.env`, local databases, live artifacts, or API keys.
 
 ---
 
+## Public Beta Deployment
+
+For a public trial, use a controlled beta instead of exposing unlimited live analysis.
+
+Recommended setup:
+
+```text
+Frontend: Vercel
+Backend: Railway / Render / Fly.io
+Database: SQLite for tiny beta, Postgres recommended for real traffic
+Secrets: platform environment variables
+```
+
+This repository includes starter deployment files:
+
+```text
+frontend/vercel.json
+backend/railway.json
+render.yaml
+railway.json
+```
+
+### Railway Backend
+
+Create a Railway service from the GitHub repository, then set:
+
+```text
+Root Directory: backend
+Start Command: uv run uvicorn app.main:app --host 0.0.0.0 --port $PORT
+```
+
+Why: this is a monorepo. The Python FastAPI app lives in `backend/`, and the repository root only contains subdirectories. If Railway builds from the repo root, provider detection can fail because it cannot find `pyproject.toml`.
+
+### Vercel Frontend
+
+Create a Vercel project from the same GitHub repository, then set:
+
+```text
+Root Directory: frontend
+Framework Preset: Next.js
+```
+
+Public beta safety controls:
+
+```env
+PUBLIC_BETA_ENABLED=true
+PUBLIC_BETA_INVITE_CODES=demo-code,partner-code
+PUBLIC_BETA_DAILY_PREFLIGHT_LIMIT=20
+PUBLIC_BETA_DAILY_RUN_LIMIT=3
+PUBLIC_BETA_REQUIRE_PREFLIGHT=true
+```
+
+When `PUBLIC_BETA_ENABLED=true`:
+
+- `/runs/preflight` requires a valid invite code.
+- `/runs` requires a valid invite code.
+- Full runs require a `preflight_id` by default.
+- Daily preflight and run limits are enforced per client IP hash.
+
+Frontend public beta config:
+
+```env
+NEXT_PUBLIC_API_BASE_URL=https://your-api.example.com
+NEXT_PUBLIC_PUBLIC_BETA_ENABLED=true
+```
+
+Production backend secrets to configure in your hosting provider:
+
+```text
+GITHUB_TOKEN
+LLM_API_KEY
+LLM_BASE_URL
+LLM_MODEL
+PUBLIC_BETA_INVITE_CODES
+DATABASE_URL
+```
+
+Keep the free public beta small. Offer deeper scans, scheduled monitoring, PDF reports, team dashboards, and premium research datasets separately.
+
+---
+
 ## Validation Modes
 
 | Mode | Rule | Use Case |

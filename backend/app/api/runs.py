@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Request
 from uuid import uuid4
 
 from app.graph.main_graph import run_graph
@@ -10,6 +10,7 @@ from app.memory.run_store import RunStore
 from app.models.run import RunCreateRequest, RunCreateResponse, RunPreflightRequest, RunPreflightResponse
 from app.services.preflight import run_preflight
 from app.services.preflight_cache import get_preflight_initial_state
+from app.services.public_beta import PublicBetaGuard
 from app.services.run_jobs import run_job_manager
 
 
@@ -21,8 +22,9 @@ def _store() -> RunStore:
 
 
 @router.post("", response_model=RunCreateResponse)
-def create_run(request: RunCreateRequest) -> dict[str, str]:
+def create_run(request: RunCreateRequest, http_request: Request) -> dict[str, str]:
     """Start a graph run asynchronously and return immediately."""
+    PublicBetaGuard().guard_run(http_request, request.invite_code, request.preflight_id)
     run_id = str(uuid4())
     initial_state = get_preflight_initial_state(request.preflight_id)
     if initial_state is not None:
@@ -40,8 +42,9 @@ def create_run(request: RunCreateRequest) -> dict[str, str]:
 
 
 @router.post("/preflight", response_model=RunPreflightResponse)
-def preflight_run(request: RunPreflightRequest) -> dict:
+def preflight_run(request: RunPreflightRequest, http_request: Request) -> dict:
     """Cheaply estimate opportunity signal before running the full graph."""
+    PublicBetaGuard().guard_preflight(http_request, request.invite_code)
     return run_preflight(request.topic, dynamic_search=request.dynamic_search)
 
 

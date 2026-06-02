@@ -265,7 +265,6 @@ export default function EvidenceDrawer({
                     {group.evidence[0]?.repo_url ? (
                       <a
                         href={group.evidence[0].repo_url}
-                        target="_blank"
                         rel="noreferrer"
                         className="inline-flex items-center gap-2 text-sm font-semibold text-foreground underline-offset-2 hover:underline"
                       >
@@ -335,7 +334,6 @@ export default function EvidenceDrawer({
                           {item.source_url ? (
                             <a
                               href={item.source_url}
-                              target="_blank"
                               rel="noreferrer"
                               className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-md border border-border bg-white px-3 text-sm font-semibold text-foreground transition hover:bg-muted"
                             >

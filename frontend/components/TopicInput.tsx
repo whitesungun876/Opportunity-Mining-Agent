@@ -39,6 +39,8 @@ const EXAMPLE_GROUPS = [
   },
 ];
 
+const PUBLIC_BETA_ENABLED = process.env.NEXT_PUBLIC_PUBLIC_BETA_ENABLED === "true";
+
 function detectScope(query: string): Scope {
   const trimmed = query.trim();
   const lower = trimmed.toLowerCase();
@@ -153,6 +155,7 @@ export default function TopicInput({ initialTopic = "" }: { initialTopic?: strin
   const router = useRouter();
   const abortControllerRef = useRef<AbortController | null>(null);
   const [topic, setTopic] = useState(initialTopic);
+  const [inviteCode, setInviteCode] = useState("");
   const [isChecking, setIsChecking] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -280,6 +283,7 @@ export default function TopicInput({ initialTopic = "" }: { initialTopic?: strin
       const run = await createRun(trimmed, true, {
         preflightId,
         runMode: "standard",
+        inviteCode: PUBLIC_BETA_ENABLED ? inviteCode.trim() : undefined,
         signal: currentController.signal,
       });
       setRunStatus({
@@ -314,7 +318,10 @@ export default function TopicInput({ initialTopic = "" }: { initialTopic?: strin
     setPreflight(null);
     setIsChecking(true);
     try {
-      const result = await preflightRun(trimmed, true, { signal: controller.signal });
+      const result = await preflightRun(trimmed, true, {
+        inviteCode: PUBLIC_BETA_ENABLED ? inviteCode.trim() : undefined,
+        signal: controller.signal,
+      });
       setPreflight(result);
       if (result.should_run) {
         setIsChecking(false);
@@ -373,6 +380,25 @@ export default function TopicInput({ initialTopic = "" }: { initialTopic?: strin
           <span>Mode is auto-detected from your input.</span>
           {showPreview ? <span className="font-medium text-foreground">{scopePreview(scope)}</span> : null}
         </div>
+
+        {PUBLIC_BETA_ENABLED ? (
+          <div className="mt-3 rounded-lg border border-border bg-white/80 p-3">
+            <label htmlFor="invite-code" className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              Public beta invite code
+            </label>
+            <input
+              id="invite-code"
+              value={inviteCode}
+              onChange={(event) => setInviteCode(event.target.value)}
+              placeholder="Enter your invite code"
+              className="mt-2 h-10 w-full rounded-md border border-border bg-background px-3 text-sm font-medium text-foreground transition placeholder:font-normal placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15"
+              disabled={isRunning || isChecking}
+            />
+            <p className="mt-2 text-xs leading-5 text-muted-foreground">
+              Public beta is rate-limited to control GitHub API and LLM cost.
+            </p>
+          </div>
+        ) : null}
 
         {suggestions.length ? (
           <div className="mt-3 flex flex-wrap items-center gap-2">

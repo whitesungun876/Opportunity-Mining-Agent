@@ -97,6 +97,11 @@ REPO_SEARCH_PATTERNS = [
 ]
 
 GLOBAL_ISSUE_PATTERNS = [
+    "{term} type:issue",
+    "{term} production type:issue",
+    "{term} workflow blocker type:issue",
+    "{term} repeated feature request type:issue",
+    "{term} workaround type:issue",
     '"{term}" production deployment type:issue',
     '"{term}" integration workflow type:issue',
     '"{term}" enterprise security permission type:issue',

@@ -409,6 +409,7 @@ export async function createRun(
   options?: {
     preflightId?: string | null;
     runMode?: "quick" | "standard" | "deep";
+    inviteCode?: string;
     signal?: AbortSignal;
   },
 ) {
@@ -420,15 +421,20 @@ export async function createRun(
       dynamic_search: dynamicSearch,
       preflight_id: options?.preflightId || null,
       run_mode: options?.runMode || "standard",
+      invite_code: options?.inviteCode || null,
     }),
   });
 }
 
-export async function preflightRun(topic: string, dynamicSearch: boolean, options?: { signal?: AbortSignal }) {
+export async function preflightRun(
+  topic: string,
+  dynamicSearch: boolean,
+  options?: { inviteCode?: string; signal?: AbortSignal },
+) {
   return request<RunPreflight>("/runs/preflight", {
     method: "POST",
     signal: options?.signal,
-    body: JSON.stringify({ topic, dynamic_search: dynamicSearch }),
+    body: JSON.stringify({ topic, dynamic_search: dynamicSearch, invite_code: options?.inviteCode || null }),
   });
 }
 

@@ -88,19 +88,19 @@ def diagnose_signal(state: GraphState | dict[str, Any]) -> SignalDiagnostics:
     if data["evidence_items_count"] >= 30 and data["pain_clusters_count"] >= 10 and data["validated_cards_count"] == 0:
         stage = "cluster"
         signal_type = "evidence_scattered"
-    elif data["selected_repos_count"] == 0:
+    elif data["selected_repos_count"] == 0 and data["raw_issues_count"] == 0 and data["evidence_items_count"] == 0:
         stage = "repo_search"
         signal_type = "evidence_sparse"
-    elif data["raw_issues_count"] < 10:
+    elif data["raw_issues_count"] < 10 and data["evidence_items_count"] < 10:
         stage = "issue_collect"
         signal_type = "evidence_sparse"
     elif data["evidence_items_count"] < 10 or data["ranked_evidence_count"] < 5:
         stage = "evidence_rank"
         signal_type = "evidence_sparse"
-    elif data["high_value_issues_count"] < 3:
+    elif data["classified_issues_count"] > 0 and data["high_value_issues_count"] < 3:
         stage = "issue_classify"
         signal_type = "classifier_too_strict"
-    elif data["pain_points_count"] < 3:
+    elif data["high_value_issues_count"] > 0 and data["pain_points_count"] < 3:
         stage = "pain_extract"
         signal_type = "classifier_too_strict"
     elif data["pain_clusters_count"] == 0:

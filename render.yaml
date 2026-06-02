@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: github-opportunity-miner-api
+    runtime: python
+    plan: starter
+    rootDir: backend
+    buildCommand: uv sync --extra dev
+    startCommand: uv run uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: MOCK_MODE
+        value: "false"
+      - key: VALIDATION_MODE
+        value: strict
+      - key: PUBLIC_BETA_ENABLED
+        value: "true"
+      - key: PUBLIC_BETA_REQUIRE_PREFLIGHT
+        value: "true"
+      - key: PUBLIC_BETA_DAILY_PREFLIGHT_LIMIT
+        value: "20"
+      - key: PUBLIC_BETA_DAILY_RUN_LIMIT
+        value: "3"
+      - key: GITHUB_GRAPHQL_URL
+        value: https://api.github.com/graphql
