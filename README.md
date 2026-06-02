@@ -253,7 +253,6 @@ This repository includes starter deployment files:
 frontend/vercel.json
 backend/railway.json
 render.yaml
-railway.json
 ```
 
 ### Railway Backend
@@ -262,10 +261,11 @@ Create a Railway service from the GitHub repository, then set:
 
 ```text
 Root Directory: backend
-Start Command: sh -c 'uv run uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}'
+Config File Path: /backend/railway.json
+Start Command: sh -c 'python -m uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}'
 ```
 
-Why: this is a monorepo. The Python FastAPI app lives in `backend/`, and the repository root only contains subdirectories. If Railway builds from the repo root, provider detection can fail because it cannot find `pyproject.toml`.
+Why: this is a monorepo. The Python FastAPI app lives in `backend/`, and the repository root only contains subdirectories. If Railway builds from the repo root, provider detection fails because it cannot find `pyproject.toml`. When that happens, Nixpacks does not install Python dependencies and you may see `uv: command not found` or exit code `127`.
 
 If Railway asks for the public networking port, use the same port the app listens on. With the command above, Railway should inject `PORT`; if it does not, the fallback is `8000`.
 
