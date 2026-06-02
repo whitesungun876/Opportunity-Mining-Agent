@@ -251,6 +251,8 @@ This repository includes starter deployment files:
 
 ```text
 frontend/vercel.json
+nixpacks.toml
+backend/nixpacks.toml
 backend/railway.json
 render.yaml
 ```
@@ -272,6 +274,13 @@ If Railway still tries `uv sync --extra dev`, clear the old Build Command in Rai
 
 ```bash
 pip install ".[dev]"
+```
+
+If Railway still appears to build from the repository root, the root `nixpacks.toml` is a fallback that runs:
+
+```bash
+cd backend && pip install ".[dev]"
+cd backend && python -m uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
 ```
 
 If Railway asks for the public networking port, use the same port the app listens on. With the command above, Railway should inject `PORT`; if it does not, the fallback is `8000`.
