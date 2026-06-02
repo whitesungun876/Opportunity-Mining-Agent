@@ -1,0 +1,62 @@
+# Local secrets
+.env
+.env.*
+!.env.example
+!backend/.env.example
+!frontend/.env.local.example
+
+# Local Codex workspace/plugin files
+.codex/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+venv/
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+dist/
+coverage/
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local databases and caches
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.sqlite3
+*.sqlite3-shm
+*.sqlite3-wal
+backend/github_opportunity_miner.db
+backend/github_opportunity_miner.db-shm
+backend/github_opportunity_miner.db-wal
+backend/data/*.db
+backend/data/*.sqlite
+backend/data/*.sqlite3
+backend/data/llm_cache.sqlite
+backend/data/embedding_cache.sqlite
+
+# Generated quality artifacts and run outputs
+backend/data/live_quality/
+backend/data/artifacts/
+backend/data/badcase_results.json
+artifacts/
+reports/
+*.trace.json
+*.log
+
+# OS/editor
+.DS_Store
+.idea/
+.vscode/

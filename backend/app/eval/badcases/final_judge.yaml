@@ -1,0 +1,56 @@
+badcases:
+  - id: bc_final_judge_001
+    stage: final_judge
+    failure_type: weak_opportunity_marked_build
+    severity: high
+    input:
+      card:
+        opportunity_id: "opp_weak_build"
+        title: "Thin Evidence Dashboard"
+        migration_cost: "medium"
+        weak_card: true
+        evidence_ids: ["ev1"]
+      response:
+        opportunity_id: "opp_weak_build"
+        decision: "build"
+        score: 92
+        best_product_form: "Hosted SaaS"
+        migration_cost: "medium"
+        reason: "Looks promising."
+        top_risks: []
+        first_validation_action: "Launch it."
+        decision_confidence: 0.9
+    expected:
+      decision_not: build
+      opportunity_id: "opp_weak_build"
+    actual: null
+    fixed: false
+    notes: "Weak evidence should downgrade build to watch/validate."
+
+  - id: bc_final_judge_002
+    stage: final_judge
+    failure_type: wrong_opportunity_id_from_llm
+    severity: high
+    input:
+      card:
+        opportunity_id: "opp_current"
+        title: "Validated Plugin"
+        migration_cost: "low"
+        weak_card: false
+        evidence_ids: ["ev1", "ev2", "ev3"]
+      response:
+        opportunity_id: "opp_wrong"
+        decision: "validate"
+        score: 77
+        best_product_form: "Plugin"
+        migration_cost: "low"
+        reason: "Evidence is adequate."
+        top_risks: ["Distribution risk"]
+        first_validation_action: "Contact three issue authors."
+        decision_confidence: 0.7
+    expected:
+      opportunity_id: "opp_current"
+      decision: validate
+    actual: null
+    fixed: false
+    notes: "Final judge output must bind to the current validated card, not the LLM-supplied id."

@@ -1,0 +1,79 @@
+badcases:
+  - id: bc_evidence_validate_001
+    stage: evidence_validate
+    failure_type: insufficient_evidence
+    severity: high
+    input:
+      validation_mode: strict
+      card:
+        opportunity_id: "opp_weak_1"
+        title: "Hosted Eval Dashboard"
+        pricing_hypothesis: "Hypothesis: teams may pay after validation."
+        evidence_ids: ["ev1"]
+      evidence_items:
+        - evidence_id: "ev1"
+          source_url: "https://github.com/example/project/issues/201"
+          title: "Need dashboard"
+    expected:
+      is_valid: false
+      weak_card: true
+      in_report: false
+    actual: null
+    fixed: false
+    notes: "Cards with fewer than 3 evidence URLs must not enter strict reports."
+
+  - id: bc_evidence_validate_002
+    stage: evidence_validate
+    failure_type: pricing_claim_as_fact
+    severity: high
+    input:
+      validation_mode: strict
+      card:
+        opportunity_id: "opp_pricing_fact"
+        title: "Enterprise Monitoring Layer"
+        pricing_hypothesis: "Enterprises will pay $500 per month for this."
+        evidence_ids: ["ev1", "ev2", "ev3"]
+      evidence_items:
+        - evidence_id: "ev1"
+          source_url: "https://github.com/example/project/issues/202"
+          title: "Need monitoring"
+        - evidence_id: "ev2"
+          source_url: "https://github.com/example/project/issues/203"
+          title: "Need traces"
+        - evidence_id: "ev3"
+          source_url: "https://github.com/example/project/issues/204"
+          title: "Need alerts"
+    expected:
+      is_valid: false
+      unsupported_claim_contains: "pricing_hypothesis"
+    actual: null
+    fixed: false
+    notes: "Pricing and willingness-to-pay must be phrased as hypotheses."
+
+  - id: bc_evidence_validate_003
+    stage: evidence_validate
+    failure_type: missing_source_url
+    severity: medium
+    input:
+      validation_mode: strict
+      card:
+        opportunity_id: "opp_missing_urls"
+        title: "Template Pack"
+        pricing_hypothesis: "Hypothesis: teams may pay for templates."
+        evidence_ids: ["ev1", "ev2", "ev3"]
+      evidence_items:
+        - evidence_id: "ev1"
+          source_url: "https://github.com/example/project/issues/205"
+          title: "Need template"
+        - evidence_id: "ev2"
+          source_url: ""
+          title: "Missing URL"
+        - evidence_id: "ev3"
+          title: "Also missing URL"
+    expected:
+      is_valid: false
+      evidence_count: 1
+      in_report: false
+    actual: null
+    fixed: false
+    notes: "Evidence ids without concrete GitHub source_url do not count."

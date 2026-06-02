@@ -1,0 +1,49 @@
+badcases:
+  - id: bc_opportunity_generate_001
+    stage: opportunity_generate
+    failure_type: pricing_fact_normalization
+    severity: high
+    input:
+      mode: parse_card
+      gap:
+        gap_id: "gap_pricing"
+        migration_cost: "medium"
+        best_product_form: "Plugin"
+        evidence_ids: ["ev1", "ev2", "ev3"]
+      response:
+        opportunity_id: "opp_pricing"
+        title: "RAG Eval Plugin"
+        pricing_hypothesis: "Customers will pay $99 per seat."
+        migration_cost: "medium"
+        product_form: "Plugin"
+        evidence_ids: ["ev1", "ev2", "ev3"]
+    expected:
+      pricing_contains: "Hypothesis:"
+      weak_card: false
+    actual: null
+    fixed: false
+    notes: "Opportunity generator must not let willingness-to-pay appear as fact."
+
+  - id: bc_opportunity_generate_002
+    stage: opportunity_generate
+    failure_type: duplicate_card_same_pain
+    severity: high
+    input:
+      mode: dedupe_cards
+      cards:
+        - opportunity_id: "opp_a"
+          title: "Hosted RAG Evaluation Dashboard"
+          pain_summary: "Teams need repeatable RAG evaluation."
+          commercial_gap: "Hosted dashboard gap."
+          evidence_ids: ["ev1", "ev2", "ev3"]
+        - opportunity_id: "opp_b"
+          title: "Hosted RAG Evaluation Dashboard"
+          pain_summary: "Teams need repeatable RAG evaluation."
+          commercial_gap: "Hosted dashboard gap."
+          evidence_ids: ["ev1", "ev2", "ev3"]
+    expected:
+      deduped_count: 1
+      duplicate_removed: true
+    actual: null
+    fixed: false
+    notes: "The same pain/evidence set should not produce duplicate opportunity cards."

@@ -1,0 +1,11 @@
+badcases:
+  - id: bc_rag_eval_001
+    input: "RAG evaluation"
+    expected:
+      min_opportunity_cards: 3
+      min_evidence_per_card: 3
+      requires_github_urls: true
+    failure_tags:
+      - query_rewrite
+      - evidence_grounding
+    severity: high

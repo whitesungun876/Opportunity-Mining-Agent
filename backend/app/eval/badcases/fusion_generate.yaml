@@ -1,0 +1,50 @@
+badcases:
+  - id: bc_fusion_generate_001
+    stage: fusion_generate
+    failure_type: paper_as_market_proof
+    severity: high
+    input:
+      candidate:
+        fusion_id: fusion_bad_001
+        title: Agent Debugging Dashboard
+        fusion_thesis: Research proves willingness to pay is proven for agent debugging.
+        why_combination_makes_sense: Paper proves users will pay for this dashboard.
+        product_angle: Hosted agent debugging dashboard
+        evidence_ids: [ev_001]
+        repo_ids: [langfuse/langfuse]
+        paper_ids: [paper_agent_eval_001]
+        overall_score: 0.8
+      evidence_items:
+        - evidence_id: ev_001
+          source_url: https://github.com/langfuse/langfuse/issues/1
+    expected:
+      is_valid: false
+      rejection_contains: willingness to pay
+    actual: null
+    fixed: false
+    notes: Research can support technical feasibility, not market demand.
+
+  - id: bc_fusion_generate_002
+    stage: fusion_generate
+    failure_type: missing_repo_capability
+    severity: high
+    input:
+      candidate:
+        fusion_id: fusion_bad_002
+        title: RAG Quality Gate
+        fusion_thesis: Evaluation capability can solve deployment pain.
+        why_combination_makes_sense: GitHub evidence shows pain.
+        product_angle: CI quality gate
+        evidence_ids: [ev_001]
+        repo_ids: []
+        paper_ids: [paper_rag_eval_001]
+        overall_score: 0.7
+      evidence_items:
+        - evidence_id: ev_001
+          source_url: https://github.com/example/repo/issues/1
+    expected:
+      is_valid: false
+      rejection_contains: source repo
+    actual: null
+    fixed: false
+    notes: Fusion must include a mature repo capability source.

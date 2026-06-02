@@ -1,0 +1,51 @@
+badcases:
+  - id: bc_issue_classify_001
+    stage: issue_classify
+    failure_type: local_environment_noise
+    severity: high
+    input:
+      title: "pip install failed on my Windows machine"
+      body: "Install fails locally after I changed Python versions. Is there a workaround for my laptop?"
+      labels: ["install", "question"]
+      comments_count: 1
+      url: "https://github.com/example/project/issues/101"
+    expected:
+      value_level: low_value
+      should_extract_pain: false
+    actual: null
+    fixed: false
+    notes: "Local environment install error should not become production pain."
+
+  - id: bc_issue_classify_002
+    stage: issue_classify
+    failure_type: vague_support_request
+    severity: medium
+    input:
+      title: "It doesn't work"
+      body: "I followed the docs and it doesn't work. Please help."
+      labels: ["support"]
+      comments_count: 0
+      url: "https://github.com/example/project/issues/102"
+    expected:
+      value_level: low_value
+      should_extract_pain: false
+    actual: null
+    fixed: false
+    notes: "Vague support requests lack production workflow evidence."
+
+  - id: bc_issue_classify_003
+    stage: issue_classify
+    failure_type: production_observability_gap
+    severity: high
+    input:
+      title: "Need observability for production trace debugging"
+      body: "We are deploying this in production and cannot debug failed traces across tenants."
+      labels: ["production", "observability"]
+      comments_count: 7
+      url: "https://github.com/example/project/issues/103"
+    expected:
+      value_level: high_value
+      should_extract_pain: true
+    actual: null
+    fixed: false
+    notes: "Production observability and debugging gaps should remain high-value."

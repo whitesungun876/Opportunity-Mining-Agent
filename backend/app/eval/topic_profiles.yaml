@@ -1,0 +1,186 @@
+default_profile: rag_evaluation
+
+generic:
+  description: Generic fallback profile for topics without a curated profile.
+  default_per_query: 5
+  default_max_issues: 24
+  queries:
+    - "{topic} production evaluation workflow type:issue"
+    - "{topic} tracing observability debugging type:issue"
+    - "{topic} enterprise permission security type:issue"
+    - "{topic} ci regression dataset type:issue"
+    - "{topic} integration workflow performance type:issue"
+  quality_keywords:
+    - production
+    - deploy
+    - deployment
+    - evaluation
+    - eval
+    - dataset
+    - regression
+    - trace
+    - tracing
+    - observability
+    - debug
+    - integration
+    - workflow
+    - ci
+    - security
+    - permission
+    - enterprise
+    - performance
+    - scale
+    - latency
+    - dashboard
+
+profiles:
+  rag_evaluation:
+    label: RAG Evaluation
+    description: Production RAG and LLM evaluation, tracing, observability, and regression workflow pains.
+    aliases:
+      - RAG evaluation
+      - RAG eval
+      - LLM evaluation
+      - LLM observability
+    default_per_query: 5
+    default_max_issues: 24
+    queries:
+      - "repo:langfuse/langfuse production evaluation workflow type:issue"
+      - "repo:langfuse/langfuse tracing observability debugging type:issue"
+      - "repo:langfuse/langfuse enterprise permission security type:issue"
+      - "repo:confident-ai/deepeval production evaluation dataset type:issue"
+      - "repo:confident-ai/deepeval ci regression evaluation type:issue"
+      - "repo:Arize-ai/phoenix production tracing evaluation type:issue"
+      - "repo:Arize-ai/phoenix observability performance scale type:issue"
+      - "repo:explodinggradients/ragas production evaluation metrics type:issue"
+      - "repo:explodinggradients/ragas integration workflow dataset type:issue"
+    quality_keywords:
+      - rag
+      - retrieval
+      - production
+      - evaluation
+      - eval
+      - dataset
+      - regression
+      - trace
+      - tracing
+      - observability
+      - debug
+      - integration
+      - workflow
+      - ci
+      - security
+      - permission
+      - enterprise
+      - performance
+      - scale
+      - latency
+      - dashboard
+
+  mcp_tools:
+    label: MCP Tools
+    description: MCP server, tool integration, auth, deployment, and enterprise workflow pains.
+    aliases:
+      - MCP tools
+      - MCP server
+      - model context protocol
+    default_per_query: 5
+    default_max_issues: 24
+    queries:
+      - "repo:modelcontextprotocol/servers authentication enterprise type:issue"
+      - "repo:modelcontextprotocol/servers deployment production type:issue"
+      - "repo:modelcontextprotocol/servers integration workflow type:issue"
+      - "repo:punkpeye/awesome-mcp-servers tool integration type:issue"
+      - "repo:langfuse/langfuse mcp authentication enterprise type:issue"
+      - "repo:langfuse/langfuse mcp deployment workflow type:issue"
+      - "MCP server production authentication type:issue"
+      - "MCP tools integration workflow type:issue"
+    quality_keywords:
+      - mcp
+      - server
+      - tool
+      - tools
+      - authentication
+      - auth
+      - oauth
+      - oidc
+      - enterprise
+      - permission
+      - deployment
+      - production
+      - integration
+      - workflow
+      - security
+      - transport
+
+  ai_agent_framework:
+    label: AI Agent Framework
+    description: Agent framework production deployment, tracing, tool calling, memory, and orchestration pains.
+    aliases:
+      - AI agent framework
+      - agent framework
+      - LLM agent framework
+    default_per_query: 5
+    default_max_issues: 24
+    queries:
+      - "repo:langchain-ai/langgraph production deployment type:issue"
+      - "repo:langchain-ai/langgraph tracing debugging workflow type:issue"
+      - "repo:langchain-ai/langgraph memory persistence type:issue"
+      - "repo:microsoft/autogen production deployment type:issue"
+      - "repo:microsoft/autogen tool calling integration type:issue"
+      - "repo:crewAIInc/crewAI production deployment type:issue"
+      - "repo:crewAIInc/crewAI observability debugging type:issue"
+      - "agent framework production tool calling type:issue"
+    quality_keywords:
+      - agent
+      - agents
+      - tool
+      - tools
+      - tool-calling
+      - orchestration
+      - memory
+      - persistence
+      - deployment
+      - production
+      - tracing
+      - debugging
+      - observability
+      - workflow
+      - integration
+      - scale
+      - latency
+
+  llm_observability:
+    label: LLM Observability
+    description: LLM tracing, monitoring, dashboard, evaluation, and production debugging pains.
+    aliases:
+      - LLM observability
+      - AI observability
+      - LLM monitoring
+    default_per_query: 5
+    default_max_issues: 24
+    queries:
+      - "repo:langfuse/langfuse observability production type:issue"
+      - "repo:langfuse/langfuse tracing debugging type:issue"
+      - "repo:Arize-ai/phoenix observability tracing type:issue"
+      - "repo:Arize-ai/phoenix evaluation production type:issue"
+      - "repo:openlit/openlit production tracing type:issue"
+      - "repo:traceloop/openllmetry observability integration type:issue"
+      - "LLM observability production dashboard type:issue"
+      - "LLM tracing debugging integration type:issue"
+    quality_keywords:
+      - observability
+      - monitoring
+      - tracing
+      - trace
+      - dashboard
+      - production
+      - debugging
+      - evaluation
+      - eval
+      - integration
+      - workflow
+      - latency
+      - cost
+      - metrics
+      - alerts
